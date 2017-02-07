@@ -73,6 +73,10 @@ class AppDispatcher {
     this.promises = []
 
     if (process.type === 'renderer') {
+      // TODO: Figure out routing app actions better
+      if (payload.actionType === 'app-new-web-contents-added') {
+        return
+      }
       const ipc = electron.ipcRenderer
       ipc.send(messages.DISPATCH_ACTION, Serializer.serialize(payload))
     }

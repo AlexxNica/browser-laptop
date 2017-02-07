@@ -82,11 +82,13 @@ const appActions = {
    * @param {Object} createProperties
    */
   tabCreateRequested: function (createProperties) {
+    /*
     if (process.type === 'renderer') {
       const {currentWindowId} = require('../../app/renderer/currentWindow')
       createProperties = makeImmutable(createProperties)
       createProperties = createProperties.set('windowId', currentWindowId)
     }
+  */
     AppDispatcher.dispatch({
       actionType: appConstants.APP_CREATE_TAB_REQUESTED,
       createProperties

@@ -92,6 +92,9 @@ class Tab extends ImmutableComponent {
 
   onDragEnd (e) {
     dnd.onDragEnd(dragTypes.TAB, this.frame, e)
+    if (!dnd.isDraggingInsideWindow()) {
+      windowActions.setActiveFrameShortcut(this.frame, messages.DETACH)
+    }
   }
 
   onDragOver (e) {

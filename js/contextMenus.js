@@ -520,6 +520,11 @@ function tabTemplateInit (frameProps) {
         click: (item) => {
           appActions.tabCloned(frameProps.get('tabId'))
         }
+      }, {
+        label: locale.translation('detach'),
+        click: (item) => {
+          windowActions.setActiveFrameShortcut(frameProps, messages.DETACH)
+        }
       })
   }
 
@@ -530,6 +535,7 @@ function tabTemplateInit (frameProps) {
         label: locale.translation(isPinned ? 'unpinTab' : 'pinTab'),
         click: (item) => {
           // Handle converting the current tab window into a pinned site
+          console.log('tabId for pin:', frameProps.get('tabId'))
           appActions.tabPinned(frameProps.get('tabId'), !isPinned)
         }
       })

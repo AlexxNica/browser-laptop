@@ -12,6 +12,7 @@ const siteUtil = require('./state/siteUtil')
 
 let inProcessDragData
 let inProcessDragType
+let isDraggingInsideWindow = false
 
 module.exports.getInProcessDragData = () => {
   return inProcessDragData
@@ -20,6 +21,18 @@ module.exports.getInProcessDragData = () => {
 module.exports.getInProcessDragType = () => {
   return inProcessDragType
 }
+
+document.addEventListener("dragenter", () => {
+  isDraggingInsideWindow = true
+}, true)
+
+document.addEventListener("dragleave", (e) => {
+  if (!e.clientX && !e.clientY) {
+    isDraggingInsideWindow = false
+  }
+}, true)
+
+module.exports.isDraggingInsideWindow = () => isDraggingInsideWindow
 
 module.exports.onDragStart = (dragType, data, e) => {
   e.dataTransfer.effectAllowed = 'all'

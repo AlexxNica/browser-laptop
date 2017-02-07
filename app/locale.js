@@ -110,6 +110,7 @@ var rendererIdentifiers = function () {
     'cleanReload',
     'reload',
     'clone',
+    'detach',
     'readingView',
     'tabManager',
     'textEncoding',

@@ -71,6 +71,7 @@ const messages = {
   GO_BACK: _,
   GO_FORWARD: _,
   RELOAD: _,
+  DETACH: _,
   ENABLE_SWIPE_GESTURE: _,
   DISABLE_SWIPE_GESTURE: _,
   // Password manager

@@ -224,7 +224,7 @@ AppStore
       location: string,
       parentFolderId: number, // set for bookmarks and bookmark folders only
       partitionNumber: number, // optionally specifies a specific session
-      tags: [string], // empty, 'bookmark', 'bookmark-folder', 'pinned', or 'reader'
+      tags: [string], // empty, 'bookmark', 'bookmark-folder' or 'reader'
       themeColor: string, // CSS compatible color string
       title: string
     } // folder: folderId; bookmark/history: location + partitionNumber + parentFolderId
@@ -269,6 +269,7 @@ AppStore
     canGoForward: boolean. // the tab can be navigated forward
     muted: boolean,  // is the tab muted
     windowId: number,  // the windowId that contains the tab
+    guestInstanceId: number,
     tabId: number
   }],
   temporarySiteSettings: {

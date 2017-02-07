@@ -502,10 +502,20 @@ class Main extends ImmutableComponent {
     })
     currentWindow.on('resize', onWindowResize)
     currentWindow.on('move', onWindowMove)
-    currentWindow.on('focus', function () {
+    currentWindow.on('focus', () => {
+      const pinnedFrames = this.props.windowState.get('frames').filter((frame) => frame.get('pinnedLocation'))
+      pinnedFrames.forEach((frame) => {
+        const webview = document.querySelector(`webview[data-frame-key="${frame.get('key')}"]`)
+        webview.attachGuest(frame.get('guestInstanceId'))
+      })
       windowActions.onFocusChanged(true)
     })
-    currentWindow.on('blur', function () {
+    currentWindow.on('blur', () => {
+      const pinnedFrames = this.props.windowState.get('frames').filter((frame) => frame.get('pinnedLocation'))
+      pinnedFrames.forEach((frame) => {
+        const webview = document.querySelector(`webview[data-frame-key="${frame.get('key')}"]`)
+        webview.detachGuest()
+      })
       appActions.windowBlurred(currentWindow.id)
       windowActions.onFocusChanged(false)
     })

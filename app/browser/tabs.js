@@ -89,16 +89,17 @@ const api = {
         index = newTabValue.get('index')
       }
 
-      // TODO(bridiver) - handle pinned property?? - probably through tabValue
       const frameOpts = {
         location,
         partition: newTab.session.partition,
         openInForeground: newTab.active,
         guestInstanceId: newTab.guestInstanceId,
+        isPinned: !!newTabValue.pinned,
         openerTabId,
         disposition,
         index
       }
+      console.log('set frameOpts for isPinned to: ', newTabValue)
 
       if (disposition === 'new-window' || disposition === 'new-popup') {
         const windowOpts = makeImmutable(size)
@@ -131,6 +132,9 @@ const api = {
       tab.on('set-tab-index', function (evt, index) {
         updateTab(tabId)
       })
+      tab.on('set-pinned', function (evt, pinned) {
+        updateTab(tabId)
+      })
       tab.on('page-favicon-updated', function (e, favicons) {
         if (favicons && favicons.length > 0) {
           // tab.setTabValues({
@@ -146,9 +150,6 @@ const api = {
         console.log('responsive')
       })
       tab.on('did-attach', () => {
-        updateTab(tabId)
-      })
-      tab.on('did-detach', () => {
         updateTab(tabId)
       })
       tab.on('page-title-updated', function () {
@@ -244,13 +245,13 @@ const api = {
 
   setAudioMuted: (state, action) => {
     action = makeImmutable(action)
-    let frameProps = action.get('frameProps')
-    let muted = action.get('muted')
-    let tabId = frameProps.get('tabId')
-    let tab = api.getWebContents(tabId)
+    const frameProps = action.get('frameProps')
+    const muted = action.get('muted')
+    const tabId = frameProps.get('tabId')
+    const tab = api.getWebContents(tabId)
     if (tab && !tab.isDestroyed()) {
       tab.setAudioMuted(muted)
-      let tabValue = getTabValue(tabId)
+      const tabValue = getTabValue(tabId)
       return tabState.updateTab(state, { tabValue })
     }
     return state
@@ -260,7 +261,7 @@ const api = {
     action = makeImmutable(action)
     const tabId = action.get('tabId')
     let options = action.get('options') || Immutable.Map()
-    let tabValue = getTabValue(tabId)
+    const tabValue = getTabValue(tabId)
     if (tabValue && tabValue.get('index') !== undefined) {
       options = options.set('index', tabValue.get('index') + 1)
     }
@@ -275,19 +276,18 @@ const api = {
   pin: (state, action) => {
     action = makeImmutable(action)
     const tabId = action.get('tabId')
-    // const pinned = action.get('pinned')
+    const pinned = action.get('pinned')
     const tab = api.getWebContents(tabId)
     if (tab && !tab.isDestroyed()) {
-      // TODO: Pin it!
-      console.log('todo')
+      tab.setPinned(pinned)
     }
     return state
   },
 
   closeTab: (state, action) => {
     action = makeImmutable(action)
-    let tabId = action.get('tabId')
-    let tab = api.getWebContents(tabId)
+    const tabId = action.get('tabId')
+    const tab = api.getWebContents(tabId)
     try {
       if (!tab.isDestroyed()) {
         tab.close()
@@ -314,6 +314,8 @@ const api = {
       }
     }
 
+    console.log('calling extensions.createTab with:', createProperties)
+    createProperties.pinned = true
     extensions.createTab(createProperties, (tab) => {
       cb && cb(tab)
     })

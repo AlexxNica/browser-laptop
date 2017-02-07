@@ -310,11 +310,14 @@ class Frame extends ImmutableComponent {
       guestInstanceId = this.props.guestInstanceId
       this.webview = document.createElement('webview')
       if (guestInstanceId) {
-        if (!this.webview.setGuestInstanceId(guestInstanceId)) {
+        if (!this.webview.attachGuest(guestInstanceId)) {
           console.error('could not set guestInstanceId ' + guestInstanceId)
           guestInstanceId = null
+        } else {
+          console.log('----set guest instance id: ', guestInstanceId)
         }
       } else {
+        console.log('---setting partition')
         // The partition is guaranteed to be initialized by now by the browser process
         this.webview.setAttribute('partition', FrameStateUtil.getPartition(this.frame))
       }
@@ -333,7 +336,8 @@ class Frame extends ImmutableComponent {
       webviewAdded = true
     }
 
-    if (!guestInstanceId || newSrc !== getTargetAboutUrl('about:blank')) {
+    if (!this.props.guestInstanceId || newSrc !== getTargetAboutUrl('about:blank')) {
+      console.log('NO GUEST INSTANCE ID, SETTING SRC')
       this.webview.setAttribute('src', newSrc)
     }
 
@@ -409,6 +413,9 @@ class Frame extends ImmutableComponent {
         this.props.tabData.get('title') !== this.frame.get('title')) {
       this.setTitle(this.props.tabData.get('title'))
     }
+    if (prevProps.activeShortcut !== this.props.activeShortcut) {
+      this.handleShortcut()
+    }
 
     const cb = () => {
       if (this.getWebRTCPolicy(prevProps) !== this.getWebRTCPolicy(this.props)) {
@@ -416,9 +423,6 @@ class Frame extends ImmutableComponent {
       }
       this.webview.setActive(this.props.isActive)
       this.webview.setTabIndex(this.props.tabIndex)
-      if (prevProps.activeShortcut !== this.props.activeShortcut) {
-        this.handleShortcut()
-      }
 
       if (this.props.isActive && !prevProps.isActive && !this.props.urlBarFocused) {
         this.webview.focus()
@@ -556,6 +560,16 @@ class Frame extends ImmutableComponent {
         break
       case 'find-prev':
         this.onFindAgain(false)
+        break
+      case 'detach':
+        console.log('------deatch1')
+        this.webview.detachGuest()
+        console.log('------deatch2')
+        appActions.newWindow(this.frame.toJS()/*{
+          //location: 'about:blank',
+          guestInstanceId: this.frame.get('guestInstanceId')
+        }*/)
+        this.props.onCloseFrame(this.frame)
         break
     }
     if (this.props.activeShortcut) {
